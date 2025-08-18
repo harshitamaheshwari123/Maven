@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; padding: 20px; }
+        h1 { text-align: center; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        th { background: #007BFF; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        input, button { padding: 8px; margin: 5px; }
+        button { cursor: pointer; background: #007BFF; color: white; border: none; border-radius: 4px; }
+        button:hover { background: #0056b3; }
+        .form-container { text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<h1>Book Management System</h1>
+
+<div class="form-container">
+    <input id="title" placeholder="Title">
+    <input id="author" placeholder="Author">
+    <input id="year" placeholder="Year" type="number">
+    <input id="price" placeholder="Price" type="number" step="0.01">
+    <button onclick="addBook()">Add Book</button>
+</div>
+
+<table id="booksTable">
+    <thead>
+        <tr>
+            <th>ID</th><th>Title</th><th>Author</th><th>Year</th><th>Price</th><th>Actions</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+const API_URL = '/api/books';
+let editingBookId = null;
+
+// Fetch and display books
+async function fetchBooks() {
+    const res = await fetch(API_URL);
+    const books = await res.json();
+    const tbody = document.querySelector("#booksTable tbody");
+    tbody.innerHTML = "";
+    books.forEach(book => {
+        tbody.innerHTML += `<tr>
+            <td>${book.id}</td>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.year}</td>
+            <td>${book.price}</td>
+            <td>
+                <button onclick="editBook(${book.id})">Edit</button>
+                <button onclick="deleteBook(${book.id})">Delete</button>
+            </td>
+        </tr>`;
+    });
+}
+
+// Add new book
+async function addBook() {
+    const book = {
+        title: document.getElementById("title").value,
+        author: document.getElementById("author").value,
+        year: parseInt(document.getElementById("year").value),
+        price: parseFloat(document.getElementById("price").value)
+    };
+    if (editingBookId) {
+        // Update book
+        await fetch(`${API_URL}/${editingBookId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(book)
+        });
+        editingBookId = null;
+        document.querySelector("button").innerText = "Add Book";
+    } else {
+        // Add new
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(book)
+        });
+    }
+    clearForm();
+    fetchBooks();
+}
+
+// Edit book
+async function editBook(id) {
+    const book = await fetch(`${API_URL}/${id}`).then(res => res.json());
+    document.getElementById("title").value = book.title;
+    document.getElementById("author").value = book.author;
+    document.getElementById("year").value = book.year;
+    document.getElementById("price").value = book.price;
+    editingBookId = id;
+    document.querySelector("button").innerText = "Update Book";
+}
+
+// Delete book
+async function deleteBook(id) {
+    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    fetchBooks();
+}
+
+// Clear form inputs
+function clearForm() {
+    document.getElementById("title").value = "";
+    document.getElementById("author").value = "";
+    document.getElementById("year").value = "";
+    document.getElementById("price").value = "";
+}
+
+fetchBooks();
+</script>
+</body>
+</html>
