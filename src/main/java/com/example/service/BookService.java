@@ -9,7 +9,6 @@ public class BookService {
     private Map<Long, Book> books = new HashMap<>();
     private long currentId = 1;
 
-    // Constructor to preload some books
     public BookService() {
         addBook(new Book(null, "Spring Boot Guide", "Harshita", 2025, 199.99));
         addBook(new Book(null, "Java Mastery", "John Doe", 2023, 299.50));

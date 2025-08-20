@@ -39,7 +39,6 @@
 const API_URL = '/api/books';
 let editingBookId = null;
 
-// Fetch and display books
 async function fetchBooks() {
     const res = await fetch(API_URL);
     const books = await res.json();
@@ -60,7 +59,7 @@ async function fetchBooks() {
     });
 }
 
-// Add new book
+
 async function addBook() {
     const book = {
         title: document.getElementById("title").value,
@@ -69,7 +68,7 @@ async function addBook() {
         price: parseFloat(document.getElementById("price").value)
     };
     if (editingBookId) {
-        // Update book
+       
         await fetch(`${API_URL}/${editingBookId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -89,7 +88,7 @@ async function addBook() {
     fetchBooks();
 }
 
-// Edit book
+
 async function editBook(id) {
     const book = await fetch(`${API_URL}/${id}`).then(res => res.json());
     document.getElementById("title").value = book.title;
@@ -100,13 +99,13 @@ async function editBook(id) {
     document.querySelector("button").innerText = "Update Book";
 }
 
-// Delete book
+
 async function deleteBook(id) {
     await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
     fetchBooks();
 }
 
-// Clear form inputs
+
 function clearForm() {
     document.getElementById("title").value = "";
     document.getElementById("author").value = "";
