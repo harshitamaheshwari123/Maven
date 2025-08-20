@@ -172,3 +172,6 @@ curl -X POST https://books-crud.onrender.com/api/books \
 ```bash
 curl https://books-crud.onrender.com/api/books
 ```
+🏆 Author
+
+👩‍💻 Developed by [Harshita]
